@@ -1,8 +1,13 @@
 # n8n-nodes-staffbase
 
+<a href="https://www.jasp.eu"><img src="https://www.jasp.eu/images/brand/jasp-logo-lockup-320.png" alt="JASP" width="160"></a>
+
 An [n8n](https://n8n.io) community node for the [Staffbase](https://staffbase.com) public API.
 Read and publish news posts, read channels, users and comments, and start workflows from
 Staffbase outbound webhooks.
+
+Built and maintained by [JASP](https://www.jasp.eu), a Staffbase partner that builds
+intranet apps and integrations.
 
 > Status: on npm as `n8n-nodes-staffbase`, not yet verified by n8n. Self-hosted n8n only
 > until verification.
