@@ -33,5 +33,9 @@
   (`JASP-eu/n8n-nodes-staffbase`, `publish.yml`) is set, the token revoked and the secret
   deleted. A trusted publisher that has not published within 48 hours expires, so 0.1.1
   follows through OIDC to validate it.
+- **0.1.0 was held by npm:** the token publish of 0.1.0 printed
+  `+ n8n-nodes-staffbase@0.1.0`, yet the registry showed only `0.0.0-stage` ("Temporary
+  Holding Version … awaiting a staged release") and `npm stage list` stayed empty. 0.1.0 appeared on its own 2.5 minutes later
+  (15:04 → 15:06 UTC) without any approval: wait a few minutes before debugging.
 - **Before January 2027:** npm removes direct publishing with granular tokens. Trusted
   publishing is not affected; never reintroduce a token-based publish path.

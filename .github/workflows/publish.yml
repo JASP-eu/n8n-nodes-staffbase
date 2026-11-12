@@ -17,27 +17,12 @@
 #
 #   npm install --save-dev @n8n/node-cli@latest
 #
-# ─── ONE-TIME SETUP ────────────────────────────────────────────────────────────
+# ─── AUTHENTICATION ────────────────────────────────────────────────────────────
 #
-# Option A — OIDC Trusted Publishing (recommended, no long-lived secrets):
-#   1. Log in to npmjs.com and open your package's settings.
-#   2. Under "Publish access" → "Trusted Publishers", click "Add a publisher".
-#   3. Select GitHub Actions and fill in:
-#        Repository owner: <your-github-username-or-org>
-#        Repository name:  <your-repo-name>
-#        Workflow name:    publish.yml
-#        Environment:      (leave blank unless you use GitHub Environments)
-#   4. Leave the NPM_TOKEN secret unset in this repository. GitHub's OIDC
-#      token is used instead — no secret ever touches your repo settings.
-#
-# Option B — npm Automation Token (fallback):
-#   1. On npmjs.com: Access Tokens → Generate New Token → Granular Access Token.
-#      Scope it to this package with "Read and write" publish permission.
-#   2. In GitHub: Settings → Secrets and variables → Actions → New secret.
-#      Name it NPM_TOKEN and paste the token value.
-#
-# Both options work with --provenance. Provenance is signed by GitHub's OIDC
-# infrastructure regardless of how npm authentication is handled.
+# npm trusted publishing (OIDC) only, no NPM_TOKEN secret. npmjs.com → package
+# n8n-nodes-staffbase → Settings → Trusted Publisher: JASP-eu/n8n-nodes-staffbase,
+# workflow publish.yml, "npm publish" allowed. Needs npm ≥ 11.5.1 (Node 24 ships it).
+# Why no token path: decisions.md, 2026-11-12.
 #
 # ─── TAG CONVENTION ────────────────────────────────────────────────────────────
 #
@@ -47,12 +32,9 @@
 #
 # ─── RELEASE PROCESS ───────────────────────────────────────────────────────────
 #
-# Run the following command locally to start an interactive release:
-#
-#   npm run release
-#
-# This will lint, build, prompt for a version bump, update the changelog,
-# commit, tag, and push — which triggers this workflow to publish to npm.
+# Raise "version" in package.json and CHANGELOG.md in a PR, merge it, then tag
+# the merge commit with the same version and push the tag. Do not use the local
+# `npm run release` (release-it): it commits and pushes to main directly.
 
 name: Publish
 
@@ -90,15 +72,5 @@ jobs:
         run: npm ci
 
       - name: Release
-        # Publishes to npm with a provenance attestation (requires id-token: write above).
-        # Lint and build run automatically as part of the release process.
-        #
-        # Option A (OIDC): leave NPM_TOKEN unset — the token step is skipped and
-        #   npm uses the OIDC exchange instead.
-        # Option B (token): set NPM_TOKEN in repo secrets — it is written to
-        #   .npmrc here before publishing.
-        run: |
-          [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          npm run release
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # n8n-node release runs lint, build and `npm publish` with provenance in CI.
+        run: npm run release
