@@ -17,3 +17,21 @@
   Same for `credential-test-required` on the signing-secret credential.
 - **Out of scope for v0.1:** user invite/update/delete, post notifications resend,
   acknowledgements, campaigns, news pages.
+
+## 2026-11-12 — Publishing
+
+- **GitHub-hosted runners in this repo (exception to the self-hosted-only team rule).** npm
+  trusted publishing and provenance work only on cloud-hosted runners ("Self-hosted runners
+  are not currently supported", docs.npmjs.com/trusted-publishers), and n8n accepts only
+  nodes published from GitHub Actions with provenance. The team rule exists because hosted
+  minutes are a paid budget; this repo is public, where standard hosted runners cost nothing.
+  CI stays on `ubuntu-latest` for the same reason. Revisit if the repo turns private.
+- **npm account `jasp-eu`** (JASP, created 2026-11-12) owns the package; 2FA on.
+- **First publish with a short-lived token, then trusted publishing.** npm can only attach a
+  trusted publisher to an existing package. 0.1.0 goes out through `publish.yml` with a
+  granular token in `NPM_TOKEN` (provenance included). Then the trusted publisher
+  (`JASP-eu/n8n-nodes-staffbase`, `publish.yml`) is set, the token revoked and the secret
+  deleted. A trusted publisher that has not published within 48 hours expires, so 0.1.1
+  follows through OIDC to validate it.
+- **Before January 2027:** npm removes direct publishing with granular tokens. Trusted
+  publishing is not affected; never reintroduce a token-based publish path.

@@ -4,7 +4,8 @@ An [n8n](https://n8n.io) community node for the [Staffbase](https://staffbase.co
 Read and publish news posts, read channels, users and comments, and start workflows from
 Staffbase outbound webhooks.
 
-> Status: not on npm yet and not submitted to n8n. Install from source as shown below.
+> Status: on npm as `n8n-nodes-staffbase`, not yet verified by n8n. Self-hosted n8n only
+> until verification.
 
 ## What it does
 
@@ -20,7 +21,11 @@ The Staffbase node can also be used as a tool by n8n AI agents.
 
 ## Installation
 
-The package is not on npm yet. Install it in a self-hosted n8n from a local build:
+In a self-hosted n8n: **Settings → Community Nodes → Install**, enter `n8n-nodes-staffbase`,
+confirm the risk notice, install. See n8n's
+[community node installation guide](https://docs.n8n.io/integrations/community-nodes/installation/gui-install/).
+
+To install from a local build instead:
 
 ```bash
 git clone https://github.com/JASP-eu/n8n-nodes-staffbase.git
@@ -134,6 +139,10 @@ npm run build
 
 The project uses npm, not Bun: the n8n node CLI and its provenance release flow
 (`npm run release`, `.github/workflows/publish.yml`) are built on npm.
+
+Releases: raise `version` in `package.json`, merge to `main`, then push the matching tag
+(`0.1.1`) on that commit. The publish workflow runs on a
+GitHub-hosted runner and publishes with npm trusted publishing and a provenance statement.
 
 ## License
 
