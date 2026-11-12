@@ -48,7 +48,7 @@ export async function staffbaseApiRequestList(
 		if (request.pagination === 'cursor' && cursor) qs.cursor = cursor;
 
 		const response = await staffbaseApiRequest.call(this, request, qs);
-		const page = extractItems(response);
+		const page = extractItems(response, request.unwrapData);
 		items.push(...page);
 
 		if (limit !== undefined && items.length >= limit) return items.slice(0, limit);

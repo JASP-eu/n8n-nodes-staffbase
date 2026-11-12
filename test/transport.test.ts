@@ -102,6 +102,20 @@ describe('staffbaseApiRequestList', () => {
 		});
 	});
 
+	it('pages through user search and returns the unwrapped users', async () => {
+		const { ctx, calls } = fakeContext([
+			{ entries: [{ data: { id: 'u0' } }, { data: { id: 'u1' } }], total: 3, nextCursor: 'c1' },
+			{ entries: [{ data: { id: 'u2' } }], total: 3, nextCursor: 'c2' },
+		]);
+		const items = await staffbaseApiRequestList.call(
+			ctx,
+			buildRequest('user', 'getAll', { query: 'Sascha' }),
+		);
+		expect(items).toEqual([{ id: 'u0' }, { id: 'u1' }, { id: 'u2' }]);
+		expect(calls).toHaveLength(2);
+		expect(calls[1].qs).toEqual({ query: 'Sascha', limit: 500, cursor: 'c1' });
+	});
+
 	it('stops on an empty page even without total', async () => {
 		const { ctx, calls } = fakeContext([{ data: [] }]);
 		expect(await staffbaseApiRequestList.call(ctx, buildRequest('comment', 'getAll', {}))).toEqual(

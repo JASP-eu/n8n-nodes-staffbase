@@ -13,10 +13,14 @@ export interface StaffbaseRequest {
 	pagination: Pagination;
 	/** Highest page size the endpoint accepts. */
 	maxPageSize?: number;
+	/** List entries are wrapped as `{ data: {...} }` (user search). */
+	unwrapData?: boolean;
 }
 
 // User API v1 is deprecated (removal 2027-10-01); v2 is selected via Accept header.
 export const USERS_V2_ACCEPT = 'application/vnd.staffbase.accessors.users.v2+json';
+// GET /users v2 ignores "query" (seen live 2026-11-12); only /users/search filters by text.
+export const USERS_SEARCH_ACCEPT = 'application/vnd.staffbase.accessors.users-search.v1+json';
 
 const id = (value: unknown, name: string): string => {
 	const text = String(value ?? '').trim();
@@ -228,19 +232,30 @@ function buildChannelRequest(operation: string, p: IDataObject): StaffbaseReques
 
 function buildUserRequest(operation: string, p: IDataObject): StaffbaseRequest {
 	switch (operation) {
-		case 'getAll':
+		case 'getAll': {
+			const includeProfile = p.includeProfile === true ? true : undefined;
+			const query = String(p.query ?? '').trim();
+			if (query) {
+				// Search returns activated users only; plain /users also lists pending ones.
+				return {
+					method: 'GET',
+					path: '/users/search',
+					qs: compact({ query, includeProfile }),
+					headers: { Accept: USERS_SEARCH_ACCEPT },
+					pagination: 'cursor',
+					maxPageSize: 500,
+					unwrapData: true,
+				};
+			}
 			return {
 				method: 'GET',
 				path: '/users',
-				qs: compact({
-					query: p.query,
-					sort: p.sort,
-					includeProfile: p.includeProfile === true ? true : undefined,
-				}),
+				qs: compact({ sort: p.sort, includeProfile }),
 				headers: { Accept: USERS_V2_ACCEPT },
 				pagination: 'cursor',
 				maxPageSize: 500,
 			};
+		}
 		case 'get':
 			return {
 				method: 'GET',
@@ -280,16 +295,16 @@ function buildCommentRequest(operation: string, p: IDataObject): StaffbaseReques
 }
 
 /** Pulls the item array out of the different list envelopes Staffbase uses. */
-export function extractItems(response: unknown): IDataObject[] {
+export function extractItems(response: unknown, unwrapData = false): IDataObject[] {
+	let items: IDataObject[] = [];
 	if (Array.isArray(response)) {
-		return response as IDataObject[];
-	}
-	if (response && typeof response === 'object') {
+		items = response as IDataObject[];
+	} else if (response && typeof response === 'object') {
 		const r = response as IDataObject;
-		if (Array.isArray(r.data)) return r.data as IDataObject[];
-		if (Array.isArray(r.entries)) return r.entries as IDataObject[];
+		if (Array.isArray(r.data)) items = r.data as IDataObject[];
+		else if (Array.isArray(r.entries)) items = r.entries as IDataObject[];
 	}
-	return [];
+	return unwrapData ? items.map((entry) => (entry?.data ?? entry) as IDataObject) : items;
 }
 
 /** Cursor for the next page, or undefined when the last page was reached. */

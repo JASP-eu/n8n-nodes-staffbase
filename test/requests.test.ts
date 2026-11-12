@@ -4,6 +4,7 @@ import {
 	buildRequest,
 	extractItems,
 	nextCursor,
+	USERS_SEARCH_ACCEPT,
 	USERS_V2_ACCEPT,
 } from '../nodes/Staffbase/shared/requests';
 
@@ -134,6 +135,19 @@ describe('buildRequest: other resources', () => {
 		expect(r.qs).toEqual({ includeProfile: true });
 	});
 
+	// Regression: v2 GET /users ignored "query" and returned every user (live test 2026-11-12).
+	it('searches users through /users/search when a query is set', () => {
+		const r = buildRequest('user', 'getAll', { includeProfile: true, query: ' Sascha ' });
+		expect(r).toMatchObject({
+			path: '/users/search',
+			pagination: 'cursor',
+			maxPageSize: 500,
+			unwrapData: true,
+		});
+		expect(r.headers).toEqual({ Accept: USERS_SEARCH_ACCEPT });
+		expect(r.qs).toEqual({ query: 'Sascha', includeProfile: true });
+	});
+
 	it('gets a user and a comment', () => {
 		expect(buildRequest('user', 'get', { userId: 'ext-7' }).path).toBe('/users/ext-7');
 		expect(buildRequest('comment', 'get', { commentId: 'c9' }).path).toBe('/comments/c9');
@@ -158,6 +172,12 @@ describe('response helpers', () => {
 		expect(extractItems({ entries: [{ id: 'b' }], nextCursor: 'x' })).toEqual([{ id: 'b' }]);
 		expect(extractItems([{ id: 'c' }])).toEqual([{ id: 'c' }]);
 		expect(extractItems(undefined)).toEqual([]);
+	});
+
+	it('unwraps user search entries', () => {
+		expect(extractItems({ entries: [{ data: { id: 'u1' } }], total: 1 }, true)).toEqual([
+			{ id: 'u1' },
+		]);
 	});
 
 	it('reads the next cursor', () => {
