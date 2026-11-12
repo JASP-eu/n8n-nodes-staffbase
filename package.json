@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-staffbase",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "n8n community node for the Staffbase API: news posts, channels, users and comments",
 	"license": "MIT",
 	"homepage": "https://github.com/JASP-eu/n8n-nodes-staffbase#readme",
@@ -21,7 +21,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/JASP-eu/n8n-nodes-staffbase.git"
+		"url": "git+https://github.com/JASP-eu/n8n-nodes-staffbase.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
