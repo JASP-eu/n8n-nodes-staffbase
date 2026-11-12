@@ -351,7 +351,8 @@ export const userProperties: INodeProperties[] = [
 				name: 'query',
 				type: 'string',
 				default: '',
-				description: 'Search across profile fields such as name or location (Get Many only)',
+				description:
+					'Search across profile fields such as name or location (Get Many only). Finds activated users only.',
 			},
 		],
 	},

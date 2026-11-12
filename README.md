@@ -90,7 +90,9 @@ There are no webhook events for news posts or channels. To react to new posts, p
 - **Locales.** Post content is written for one locale per call (default `en_US`). Write more
   languages with one **Update** per locale.
 - **Users** use User API v2 (`Accept: application/vnd.staffbase.accessors.users.v2+json`);
-  v1 is deprecated by Staffbase.
+  v1 is deprecated by Staffbase. Without a search query, **Get Many** also returns pending
+  (not yet activated) users. With **Search Query** set, the node calls `/users/search`, which
+  finds activated users only.
 
 ## Workflow templates
 
@@ -123,7 +125,7 @@ app; they are covered by unit tests of the request they build.
 | Post: Delete             | `DELETE /posts/{postID}`                                                                                  | News API                                                                                                                                       | no (unit tests)              |
 | Channel: Get Many        | `GET /branch/channels` (cursor) or `GET /channels` (offset)                                               | News API                                                                                                                                       | yes                          |
 | Channel: Get             | `GET /channels/{channelID}`                                                                               | News API                                                                                                                                       | yes                          |
-| User: Get Many           | `GET /users`, v2, cursor (`query`, `includeProfile`, `limit` ≤ 500)                                       | [User API](https://developers.staffbase.com/api/api-user/)                                                                                     | yes                          |
+| User: Get Many           | `GET /users`, v2, or `GET /users/search` with a query; cursor, `limit` ≤ 500                              | [User API](https://developers.staffbase.com/api/api-user/)                                                                                     | yes                          |
 | User: Get                | `GET /users/{userId}` (ID or external ID)                                                                 | User API                                                                                                                                       | yes                          |
 | Comment: Get Many        | `GET /comments` (`filter`, `sort`, `manage`, `limit`, `offset`)                                           | [Comments API](https://developers.staffbase.com/api/api-comments/)                                                                             | call ok, app had no comments |
 | Comment: Get             | `GET /comments/{commentId}`                                                                               | Comments API                                                                                                                                   | no                           |
