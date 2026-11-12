@@ -4,6 +4,9 @@
 	"description": "n8n community node for the Staffbase API: news posts, channels, users and comments",
 	"license": "MIT",
 	"homepage": "https://github.com/JASP-eu/n8n-nodes-staffbase#readme",
+	"bugs": {
+		"url": "https://github.com/JASP-eu/n8n-nodes-staffbase/issues"
+	},
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
