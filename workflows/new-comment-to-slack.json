@@ -1,0 +1,45 @@
+{
+	"name": "Staffbase comment alerts to Slack",
+	"nodes": [
+		{
+			"parameters": { "events": ["news.comment.created.v1"], "options": {} },
+			"name": "Staffbase Trigger",
+			"type": "n8n-nodes-staffbase.staffbaseTrigger",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"webhookId": "staffbase-new-comment",
+			"credentials": {
+				"staffbaseWebhookApi": { "id": "", "name": "Staffbase Webhook Signing Secret" }
+			}
+		},
+		{
+			"parameters": {
+				"resource": "comment",
+				"operation": "get",
+				"commentId": "={{ $json.data.commentId }}"
+			},
+			"name": "Get Comment",
+			"type": "n8n-nodes-staffbase.staffbase",
+			"typeVersion": 1,
+			"position": [220, 0],
+			"credentials": { "staffbaseApi": { "id": "", "name": "Staffbase API" } }
+		},
+		{
+			"parameters": {
+				"select": "channel",
+				"channelId": { "__rl": true, "mode": "name", "value": "#intranet-moderation" },
+				"text": "=New Staffbase comment: {{ $json.text }}",
+				"otherOptions": {}
+			},
+			"name": "Notify Slack",
+			"type": "n8n-nodes-base.slack",
+			"typeVersion": 2.3,
+			"position": [440, 0]
+		}
+	],
+	"connections": {
+		"Staffbase Trigger": { "main": [[{ "node": "Get Comment", "type": "main", "index": 0 }]] },
+		"Get Comment": { "main": [[{ "node": "Notify Slack", "type": "main", "index": 0 }]] }
+	},
+	"settings": { "executionOrder": "v1" }
+}

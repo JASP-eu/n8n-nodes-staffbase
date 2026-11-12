@@ -1,0 +1,57 @@
+{
+	"name": "Weekly Staffbase news digest by email",
+	"nodes": [
+		{
+			"parameters": {
+				"rule": { "interval": [{ "field": "weeks", "triggerAtDay": [1], "triggerAtHour": 8 }] }
+			},
+			"name": "Monday 8:00",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [0, 0]
+		},
+		{
+			"parameters": {
+				"resource": "post",
+				"operation": "getAll",
+				"scope": "manageable",
+				"limit": 10,
+				"filters": { "sort": "published_DESC", "contentType": ["articles"] }
+			},
+			"name": "Latest Posts",
+			"type": "n8n-nodes-staffbase.staffbase",
+			"typeVersion": 1,
+			"position": [220, 0],
+			"credentials": { "staffbaseApi": { "id": "", "name": "Staffbase API" } }
+		},
+		{
+			"parameters": {
+				"jsCode": "const rows = $input.all().map((i) => {\n  const c = Object.values(i.json.contents ?? {})[0] ?? {};\n  return `<li><strong>${c.title ?? '(untitled)'}</strong> ${c.teaser ?? ''}</li>`;\n});\nreturn [{ json: { html: `<h2>This week on the intranet</h2><ul>${rows.join('')}</ul>` } }];"
+			},
+			"name": "Build Digest",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [440, 0]
+		},
+		{
+			"parameters": {
+				"fromEmail": "intranet@example.com",
+				"toEmail": "team@example.com",
+				"subject": "Your weekly intranet digest",
+				"emailFormat": "html",
+				"html": "={{ $json.html }}",
+				"options": {}
+			},
+			"name": "Send Digest",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [660, 0]
+		}
+	],
+	"connections": {
+		"Monday 8:00": { "main": [[{ "node": "Latest Posts", "type": "main", "index": 0 }]] },
+		"Latest Posts": { "main": [[{ "node": "Build Digest", "type": "main", "index": 0 }]] },
+		"Build Digest": { "main": [[{ "node": "Send Digest", "type": "main", "index": 0 }]] }
+	},
+	"settings": { "executionOrder": "v1" }
+}

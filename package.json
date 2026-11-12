@@ -1,19 +1,24 @@
 {
-	"name": "n8n-nodes-<...>",
+	"name": "n8n-nodes-staffbase",
 	"version": "0.1.0",
-	"description": "",
+	"description": "n8n community node for the Staffbase API: news posts, channels, users and comments",
 	"license": "MIT",
-	"homepage": "",
+	"homepage": "https://github.com/JASP-eu/n8n-nodes-staffbase#readme",
 	"keywords": [
-		"n8n-community-node-package"
+		"n8n-community-node-package",
+		"n8n",
+		"staffbase",
+		"employee-app",
+		"intranet"
 	],
 	"author": {
-		"name": "",
-		"email": ""
+		"name": "JASP",
+		"email": "info@jasp.eu",
+		"url": "https://jasp.eu"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/<...>/n8n-nodes-<...>.git"
+		"url": "https://github.com/JASP-eu/n8n-nodes-staffbase.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
@@ -21,6 +26,8 @@
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
+		"typecheck": "tsc -p tsconfig.test.json",
+		"test": "vitest run",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease"
 	},
@@ -31,20 +38,22 @@
 		"n8nNodesApiVersion": 1,
 		"strict": true,
 		"credentials": [
-			"dist/credentials/GithubIssuesApi.credentials.js",
-			"dist/credentials/GithubIssuesOAuth2Api.credentials.js"
+			"dist/credentials/StaffbaseApi.credentials.js",
+			"dist/credentials/StaffbaseWebhookApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/GithubIssues/GithubIssues.node.js",
-			"dist/nodes/Example/Example.node.js"
+			"dist/nodes/Staffbase/Staffbase.node.js",
+			"dist/nodes/StaffbaseTrigger/StaffbaseTrigger.node.js"
 		]
 	},
 	"devDependencies": {
-		"@n8n/node-cli": "*",
+		"@n8n/node-cli": "0.56.3",
 		"eslint": "9.39.4",
+		"n8n-workflow": "2.16.0",
 		"prettier": "3.8.3",
 		"release-it": "20.2.0",
-		"typescript": "5.9.3"
+		"typescript": "6.0.3",
+		"vitest": "5.1.0"
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
