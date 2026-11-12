@@ -4,7 +4,7 @@ An [n8n](https://n8n.io) community node for the [Staffbase](https://staffbase.co
 Read and publish news posts, read channels, users and comments, and start workflows from
 Staffbase outbound webhooks.
 
-> Status: private and unpublished. Not on npm and not submitted to n8n.
+> Status: not on npm yet and not submitted to n8n. Install from source as shown below.
 
 ## What it does
 
