@@ -1,4 +1,5 @@
-Copyright 2022 n8n
+Copyright 2026 JASP
+Copyright 2022 n8n (n8n-nodes-starter template)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
