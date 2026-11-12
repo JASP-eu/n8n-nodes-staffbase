@@ -2,7 +2,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 
 export type SignatureResult =
 	| { valid: true }
-	| { valid: false; reason: 'missing' | 'malformed' | 'stale' | 'mismatch' };
+	| { valid: false; reason: 'no-secret' | 'missing' | 'malformed' | 'stale' | 'mismatch' };
 
 /**
  * Verifies a Staffbase outbound webhook signature.
@@ -16,6 +16,8 @@ export function verifyStaffbaseSignature(
 	nowSeconds: number,
 	toleranceSeconds = 300,
 ): SignatureResult {
+	// An empty key is a valid HMAC key, so without this anyone could sign deliveries.
+	if (!secret.trim()) return { valid: false, reason: 'no-secret' };
 	if (!header) return { valid: false, reason: 'missing' };
 
 	const parts = new Map<string, string[]>();
@@ -36,8 +38,8 @@ export function verifyStaffbaseSignature(
 		return { valid: false, reason: 'stale' };
 	}
 
-	const body = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
-	const expected = createHmac('sha256', secret).update(`${timestamp}.${body}`).digest();
+	// Hash the received bytes as-is; decoding first would alter invalid UTF-8.
+	const expected = createHmac('sha256', secret).update(`${timestamp}.`).update(rawBody).digest();
 
 	// The docs show one v1 entry; tolerating several costs nothing and survives a format change.
 	for (const candidate of signatures) {

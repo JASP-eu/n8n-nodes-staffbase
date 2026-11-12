@@ -108,7 +108,7 @@ export class Staffbase implements INodeType {
 					const response = await staffbaseApiRequest.call(this, request);
 					results =
 						operation === 'delete'
-							? [{ deleted: true, id: params.postId }]
+							? [{ deleted: true, id: String(params.postId).trim() }]
 							: [(response ?? {}) as IDataObject];
 				}
 

@@ -33,6 +33,21 @@ describe('verifyStaffbaseSignature', () => {
 		});
 	});
 
+	it('rejects everything when no signing secret is set, even a body signed with an empty key', () => {
+		for (const empty of ['', '  ']) {
+			expect(verifyStaffbaseSignature(sign(now, body, ''), body, empty, now)).toEqual({
+				valid: false,
+				reason: 'no-secret',
+			});
+		}
+	});
+
+	it('verifies the exact bytes, including invalid UTF-8', () => {
+		const raw = Buffer.concat([Buffer.from('{"a":"'), Buffer.from([0xff]), Buffer.from('"}')]);
+		const header = `t=${now},v1=${createHmac('sha256', secret).update(`${now}.`).update(raw).digest('hex')}`;
+		expect(verifyStaffbaseSignature(header, raw, secret, now)).toEqual({ valid: true });
+	});
+
 	it('allows old deliveries when the age check is off', () => {
 		expect(verifyStaffbaseSignature(sign(now - 9999, body), body, secret, now, 0)).toEqual({
 			valid: true,
