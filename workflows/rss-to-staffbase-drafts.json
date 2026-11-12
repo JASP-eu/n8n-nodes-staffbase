@@ -1,0 +1,43 @@
+{
+	"name": "RSS feed to Staffbase draft posts",
+	"nodes": [
+		{
+			"parameters": { "rule": { "interval": [{ "field": "hours", "hoursInterval": 6 }] } },
+			"name": "Every 6 Hours",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [0, 0]
+		},
+		{
+			"parameters": { "url": "https://example.com/feed.xml", "options": {} },
+			"name": "Read RSS Feed",
+			"type": "n8n-nodes-base.rssFeedRead",
+			"typeVersion": 1.1,
+			"position": [220, 0]
+		},
+		{
+			"parameters": {
+				"resource": "post",
+				"operation": "create",
+				"channelId": "REPLACE_WITH_CHANNEL_ID",
+				"title": "={{ $json.title }}",
+				"publish": "draft",
+				"additionalFields": {
+					"teaser": "={{ $json.contentSnippet }}",
+					"content": "={{ $json.content }}<p><a href=\"{{ $json.link }}\">Read the original</a></p>",
+					"externalId": "={{ $json.guid.toLowerCase().replace(/[^a-z0-9_-]/g, '-').slice(0, 60) }}"
+				}
+			},
+			"name": "Create Draft Post",
+			"type": "n8n-nodes-staffbase.staffbase",
+			"typeVersion": 1,
+			"position": [440, 0],
+			"credentials": { "staffbaseApi": { "id": "", "name": "Staffbase API" } }
+		}
+	],
+	"connections": {
+		"Every 6 Hours": { "main": [[{ "node": "Read RSS Feed", "type": "main", "index": 0 }]] },
+		"Read RSS Feed": { "main": [[{ "node": "Create Draft Post", "type": "main", "index": 0 }]] }
+	},
+	"settings": { "executionOrder": "v1" }
+}

@@ -1,0 +1,12 @@
+{
+	"node": "n8n-nodes-staffbase.staffbaseTrigger",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Communication"],
+	"resources": {
+		"credentialDocumentation": [
+			{ "url": "https://github.com/JASP-eu/n8n-nodes-staffbase#credentials" }
+		],
+		"primaryDocumentation": [{ "url": "https://github.com/JASP-eu/n8n-nodes-staffbase#readme" }]
+	}
+}
